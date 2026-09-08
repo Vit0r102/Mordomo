@@ -66,7 +66,7 @@ export function AppShell({ children }) {
             <Quote size={20} />
           </span>
           <span>
-            <span className="md-brand-name">Mordomo</span>
+            <span className="md-brand-name">Mordomo</span> <br />
             <span className="md-brand-tag">Gestão com propósito</span>
           </span>
         </div>
