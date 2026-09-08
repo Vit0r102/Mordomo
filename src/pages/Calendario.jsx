@@ -2,7 +2,13 @@ import { useMemo } from "react";
 import { PageHeader, Card, EmptyState, Badge } from "../components/mordomo/ui";
 import { useMordomo } from "../hooks/useMordomo";
 import { formatBRL, monthLabel, MONTHS } from "../utils/format";
-import { receitasDoMes, despesasDoMes, contasAPagar } from "../services/mordomoService";
+import {
+  receitasDoMes,
+  despesasDoMes,
+  contasAPagar,
+  recebimentosPrevistosDoMes,
+} from "../services/mordomoService";
+
 
 const DIAS = ["D", "S", "T", "Q", "Q", "S", "S"];
 
@@ -32,6 +38,15 @@ export function Calendario() {
         tipo: "fixo",
       }),
     );
+    recebimentosPrevistosDoMes(state, ym).forEach((r) =>
+      push(Number(String(r.dataPrevista).slice(8, 10)), {
+        id: `rf-${r.id}`,
+        descricao: `💰 ${r.descricao}`,
+        valor: r.valor,
+        tipo: "futuro",
+      }),
+    );
+
     return mapa;
   }, [state, ym]);
 

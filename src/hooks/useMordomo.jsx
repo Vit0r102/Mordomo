@@ -2,6 +2,8 @@ import { createContext, useContext, useEffect, useMemo, useState, useCallback } 
 import { loadState, saveState, resetState } from "../repositories/localStorageRepository";
 import { buildSeedState } from "../data/seed";
 import { uid } from "../utils/format";
+import { converterRecebimentoEmReceita } from "../services/mordomoService";
+
 
 const MordomoContext = createContext(null);
 
@@ -133,6 +135,42 @@ export function MordomoProvider({ children }) {
         }),
       addPatrimonio: addTo("patrimonio", "pat"),
       removePatrimonio: removeFrom("patrimonio"),
+      addRecebimentoFuturo: (dados) =>
+        update((prev) => ({
+          ...prev,
+          recebimentosFuturos: [
+            ...(prev.recebimentosFuturos || []),
+            {
+              id: uid("rf"),
+              descricao: dados.descricao,
+              valor: Number(dados.valor) || 0,
+              categoriaId: dados.categoriaId || null,
+              dataPrevista: dados.dataPrevista || null,
+              observacao: dados.observacao || "",
+              recebido: false,
+              receitaId: null,
+              dataRecebimento: null,
+            },
+          ],
+        })),
+      removeRecebimentoFuturo: removeFrom("recebimentosFuturos"),
+      confirmarRecebimento: (recebimentoId, dados = {}) =>
+        update((prev) => {
+          const alvo = (prev.recebimentosFuturos || []).find((r) => r.id === recebimentoId);
+          const novaReceita = converterRecebimentoEmReceita(alvo, dados);
+          if (!novaReceita) return prev;
+          const receitaId = uid("rec");
+          return {
+            ...prev,
+            receitas: [...prev.receitas, { ...novaReceita, id: receitaId }],
+            recebimentosFuturos: prev.recebimentosFuturos.map((r) =>
+              r.id === recebimentoId
+                ? { ...r, recebido: true, receitaId, dataRecebimento: novaReceita.data }
+                : r,
+            ),
+          };
+        }),
+
       setConfiguracoes: (patch) =>
         update((prev) => ({ ...prev, configuracoes: { ...prev.configuracoes, ...patch } })),
       setUsuario: (patch) => update((prev) => ({ ...prev, usuario: { ...prev.usuario, ...patch } })),

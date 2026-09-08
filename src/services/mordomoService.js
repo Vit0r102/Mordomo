@@ -1,4 +1,4 @@
-import { monthKey, lastMonths, monthShort } from "../utils/format";
+import { monthKey, lastMonths, monthShort, todayISO } from "../utils/format";
 
 export function receitasDoMes(state, ym) {
   return state.receitas.filter((r) => monthKey(r.data) === ym);
@@ -184,3 +184,46 @@ export function nomeTipoDinheiro(state, id) {
   const tipo = (state.tiposDinheiro || []).find((t) => t.id === id);
   return tipo ? tipo.nome : "—";
 }
+
+/* ---------- Recebimentos futuros ---------- */
+
+export function recebimentosFuturos(state) {
+  return state.recebimentosFuturos || [];
+}
+
+export function recebimentosPendentes(state) {
+  return recebimentosFuturos(state)
+    .filter((r) => !r.recebido)
+    .sort((a, b) => String(a.dataPrevista || "9999").localeCompare(String(b.dataPrevista || "9999")));
+}
+
+export function recebimentosRecebidos(state) {
+  return recebimentosFuturos(state)
+    .filter((r) => r.recebido)
+    .sort((a, b) => String(b.dataRecebimento || "").localeCompare(String(a.dataRecebimento || "")));
+}
+
+export function totalRecebimentosPendentes(state) {
+  return somar(recebimentosPendentes(state));
+}
+
+export function recebimentosPrevistosDoMes(state, ym) {
+  return recebimentosPendentes(state).filter((r) => r.dataPrevista && monthKey(r.dataPrevista) === ym);
+}
+
+/** Regra: um recebimento futuro pendente vira uma receita real. Idempotente. */
+export function converterRecebimentoEmReceita(recebimento, dados = {}) {
+  if (!recebimento || recebimento.recebido) return null;
+  return {
+    descricao: recebimento.descricao,
+    valor: Number(recebimento.valor) || 0,
+    categoriaId: recebimento.categoriaId || null,
+    tipoDinheiroId: dados.tipoDinheiroId || null,
+    contaId: dados.contaId || null,
+    data: dados.data || recebimento.dataPrevista || todayISO(),
+    observacao: dados.observacao || recebimento.observacao || "",
+    recebimentoFuturoId: recebimento.id,
+    origem: "recebimento_futuro",
+  };
+}
+

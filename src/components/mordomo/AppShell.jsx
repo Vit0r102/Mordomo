@@ -8,6 +8,8 @@ import {
   Landmark,
   HandHeart,
   History,
+  Hourglass,
+
   PieChart,
   Tags,
   Wallet,
@@ -26,6 +28,8 @@ import { MonthSelector } from "./ui";
 export const NAV = [
   { to: "/", label: "Visão Geral", icon: LayoutDashboard },
   { to: "/receitas", label: "Receitas", icon: TrendingUp },
+  { to: "/recebimentos-futuros", label: "Recebimentos Futuros", icon: Hourglass },
+
   { to: "/despesas", label: "Despesas", icon: TrendingDown },
   { to: "/planejamento", label: "Planejamento", icon: Target },
   { to: "/dividas", label: "Dívidas", icon: Landmark },
@@ -62,7 +66,7 @@ export function AppShell({ children }) {
             <Quote size={20} />
           </span>
           <span>
-            <span className="md-brand-name">Mordomo</span><br />
+            <span className="md-brand-name">Mordomo</span>
             <span className="md-brand-tag">Gestão com propósito</span>
           </span>
         </div>

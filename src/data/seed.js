@@ -215,6 +215,31 @@ export const patrimonio = [
   { id: "pat_reserva", nome: "Reserva", valor: 4300 },
 ];
 
+export const recebimentosFuturos = [
+  {
+    id: "rf_projeto",
+    descricao: "Saldo do projeto de consultoria",
+    valor: 800,
+    categoriaId: "cat_extra",
+    dataPrevista: "2026-07-22",
+    observacao: "R$ 200 recebidos na assinatura do contrato.",
+    recebido: false,
+    receitaId: null,
+    dataRecebimento: null,
+  },
+  {
+    id: "rf_freela",
+    descricao: "Segunda parcela do freelance",
+    valor: 480,
+    categoriaId: "cat_extra",
+    dataPrevista: null,
+    observacao: "Sem data combinada ainda.",
+    recebido: false,
+    receitaId: null,
+    dataRecebimento: null,
+  },
+];
+
 export function buildSeedState() {
   return {
     usuario: { nome: "João Oliveira", versiculo: "Colossenses 3.23" },
@@ -227,6 +252,7 @@ export function buildSeedState() {
     dividas,
     pagamentosFixos,
     patrimonio,
+    recebimentosFuturos,
     configuracoes: { mesReferencia: CURRENT_MONTH, mostrarMensagens: true, percentualDizimo: 10 },
   };
 }
@@ -243,6 +269,8 @@ export function buildEmptyState() {
     dividas: [],
     pagamentosFixos: [],
     patrimonio: [],
+    recebimentosFuturos: [],
     configuracoes: { mesReferencia: CURRENT_MONTH, mostrarMensagens: true, percentualDizimo: 10 },
   };
 }
+

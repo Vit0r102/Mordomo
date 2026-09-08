@@ -827,6 +827,20 @@ textarea {
   background: var(--md-gold-100);
   color: var(--md-gold-600);
 }
+.md-cal-event.is-despesa {
+  background: var(--md-red-100);
+  color: var(--md-red-600);
+}
+.md-cal-event.is-fixo {
+  background: var(--md-gold-100);
+  color: var(--md-gold-600);
+}
+.md-cal-event.is-futuro {
+  background: var(--md-gold-100);
+  color: var(--md-gold-600);
+  border: 1px dashed var(--md-gold-600);
+}
+
 
 /* ---------- Mês selector ---------- */
 .md-month {

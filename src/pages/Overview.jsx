@@ -15,7 +15,7 @@ import {
 } from "recharts";
 import { Card, StatCard, Progress, EmptyState, Badge } from "../components/mordomo/ui";
 import { useMordomo } from "../hooks/useMordomo";
-import { formatBRL, formatShortBRL, monthLabel, addMonths, MONTHS_SHORT } from "../utils/format";
+import { formatBRL, formatShortBRL, formatDate, monthLabel, addMonths, MONTHS_SHORT } from "../utils/format";
 import {
   totaisDoMes,
   variacao,
@@ -26,7 +26,10 @@ import {
   resumoPlanejamento,
   patrimonioTotal,
   resumoDividas,
+  recebimentosPendentes,
+  totalRecebimentosPendentes,
 } from "../services/mordomoService";
+
 
 export function Overview() {
   const { state } = useMordomo();
@@ -49,6 +52,9 @@ export function Overview() {
   }, [state, ym]);
 
   const { atual, anterior, plano } = dados;
+  const pendentes = recebimentosPendentes(state);
+  const totalPendente = totalRecebimentosPendentes(state);
+
 
   return (
     <>
@@ -270,7 +276,45 @@ export function Overview() {
             </div>
           )}
         </Card>
+
+        <Card
+          title="Recebimentos futuros"
+          action={
+            <Link to="/recebimentos-futuros" className="md-mute-xs">
+              Ver todos
+            </Link>
+          }
+        >
+          {pendentes.length === 0 ? (
+            <EmptyState
+              title="Nenhuma expectativa"
+              message="Registre valores que você espera receber para acompanhá-los aqui."
+            />
+          ) : (
+            <div className="md-list">
+              {pendentes.slice(0, 4).map((r) => (
+                <div className="md-list-row" key={r.id}>
+                  <div className="md-list-main">
+                    <strong>{r.descricao}</strong>
+                    <span className="md-mute-xs">
+                      {r.dataPrevista ? `Previsto para ${formatDate(r.dataPrevista)}` : "Sem data prevista"}
+                    </span>
+                  </div>
+                  <div style={{ textAlign: "right" }}>
+                    <div className="md-list-amount">{formatBRL(r.valor)}</div>
+                    <Badge tone="gold">A receber</Badge>
+                  </div>
+                </div>
+              ))}
+              <div className="md-list-total">
+                <span>Total previsto (não entra no saldo)</span>
+                <span>{formatBRL(totalPendente)}</span>
+              </div>
+            </div>
+          )}
+        </Card>
       </div>
+
     </>
   );
 }
