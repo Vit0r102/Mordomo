@@ -16,6 +16,7 @@ import {
   CalendarDays,
   Settings,
   Menu,
+  HelpCircle,
   Bell,
   Quote,
   Plus,
@@ -40,6 +41,7 @@ export const NAV = [
   { to: "/contas", label: "Contas", icon: Wallet },
   { to: "/calendario", label: "Calendário", icon: CalendarDays },
   { to: "/configuracoes", label: "Configurações", icon: Settings },
+  { to: "/como-usar", label: "Como Usar", icon: HelpCircle },
 ];
 
 const MOBILE = ["/", "/receitas", "/despesas", "/relatorios"];
@@ -66,7 +68,7 @@ export function AppShell({ children }) {
             <Quote size={20} />
           </span>
           <span>
-            <span className="md-brand-name">Mordomo</span> <br />
+            <span className="md-brand-name">Mordomo</span>
             <span className="md-brand-tag">Gestão com propósito</span>
           </span>
         </div>
