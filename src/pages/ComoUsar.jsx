@@ -21,7 +21,7 @@ import { PageHeader, Card } from "../components/mordomo/ui";
 const SECOES = [
   {
     icon: LayoutDashboard,
-    titulo: "Visão Geral",
+    titulo: "Visão Geral: ", 
     resumo: "O painel principal do Mordomo: o resumo do seu mês em um só lugar.",
     itens: [
       "Aqui você vê o total de receitas, despesas, saldo do mês e os principais gráficos.",
@@ -31,7 +31,7 @@ const SECOES = [
   },
   {
     icon: TrendingUp,
-    titulo: "Receitas",
+    titulo: "Receitas: ",
     resumo: "Todo dinheiro que entra: salário, vendas, freelas e outras entradas.",
     itens: [
       "Clique em “+ Nova receita” para registrar uma entrada. Informe descrição, valor, categoria e data.",
@@ -41,7 +41,7 @@ const SECOES = [
   },
   {
     icon: Hourglass,
-    titulo: "Recebimentos Futuros",
+    titulo: "Recebimentos Futuros: ",
     resumo: "Valores que você espera receber, mas que ainda não caíram na conta.",
     itens: [
       "Cadastre recebimentos esperados com descrição, valor e, se quiser, uma data prevista (opcional).",
@@ -53,7 +53,7 @@ const SECOES = [
   },
   {
     icon: TrendingDown,
-    titulo: "Despesas",
+    titulo: "Despesas: ",
     resumo: "Todo dinheiro que sai: contas, compras, assinaturas e gastos do dia a dia.",
     itens: [
       "Clique em “+ Nova despesa” e preencha descrição, valor, categoria, data e forma de pagamento.",
@@ -63,7 +63,7 @@ const SECOES = [
   },
   {
     icon: Target,
-    titulo: "Planejamento",
+    titulo: "Planejamento: ",
     resumo: "Defina limites de gastos por categoria e acompanhe o progresso.",
     itens: [
       "Estabeleça quanto pretende gastar por categoria no mês.",
@@ -73,7 +73,7 @@ const SECOES = [
   },
   {
     icon: Landmark,
-    titulo: "Dívidas",
+    titulo: "Dívidas: ",
     resumo: "Controle empréstimos, parcelas e o quanto já foi quitado.",
     itens: [
       "Cadastre cada dívida com valor total, parcelas e vencimentos.",
@@ -83,7 +83,7 @@ const SECOES = [
   },
   {
     icon: HandHeart,
-    titulo: "Dízimos e Ofertas",
+    titulo: "Dízimos e Ofertas: ",
     resumo: "Separe e registre suas contribuições com propósito.",
     itens: [
       "Registre dízimos e ofertas com data, valor e observação.",
@@ -92,7 +92,7 @@ const SECOES = [
   },
   {
     icon: History,
-    titulo: "Histórico",
+    titulo: "Histórico: ",
     resumo: "Todos os seus lançamentos em ordem cronológica.",
     itens: [
       "Veja tudo o que foi registrado, mês a mês.",
@@ -101,7 +101,7 @@ const SECOES = [
   },
   {
     icon: PieChart,
-    titulo: "Relatórios",
+    titulo: "Relatórios: ",
     resumo: "Gráficos e comparações para entender seus hábitos financeiros.",
     itens: [
       "Compare receitas e despesas dos últimos meses.",
@@ -111,7 +111,7 @@ const SECOES = [
   },
   {
     icon: Tags,
-    titulo: "Categorias",
+    titulo: "Categorias: ",
     resumo: "Organize seus lançamentos em categorias personalizadas.",
     itens: [
       "Crie, edite e remova categorias de receitas e despesas.",
@@ -120,7 +120,7 @@ const SECOES = [
   },
   {
     icon: Wallet,
-    titulo: "Contas",
+    titulo: "Contas: ",
     resumo: "Cadastre suas contas bancárias, carteiras e cartões.",
     itens: [
       "Registre suas contas e acompanhe o saldo de cada uma.",
@@ -129,7 +129,7 @@ const SECOES = [
   },
   {
     icon: CalendarDays,
-    titulo: "Calendário",
+    titulo: "Calendário: ",
     resumo: "Uma visão mensal de tudo o que acontece (e vai acontecer) nas suas finanças.",
     itens: [
       "Despesas, receitas, compromissos fixos e recebimentos futuros com data aparecem no dia correspondente.",
@@ -139,7 +139,7 @@ const SECOES = [
   },
   {
     icon: Settings,
-    titulo: "Configurações",
+    titulo: "Configurações: ",
     resumo: "Personalize o Mordomo do seu jeito.",
     itens: [
       "Altere seu nome e o versículo exibido na barra lateral.",
