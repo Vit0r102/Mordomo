@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { ChevronLeft, ChevronRight, Inbox, X } from "lucide-react";
-import { monthLabel, addMonths, formatBRL } from "../../utils/format";
+import { monthLabel, addMonths, formatBRL, currentMonthKey } from "../../utils/format";
 import { useMesReferencia } from "../../hooks/useMordomo";
 
 export function PageHeader({ title, subtitle, actions }) {
@@ -115,6 +115,7 @@ export function EmptyState({ title, message, action }) {
 
 export function MonthSelector() {
   const [mes, setMes] = useMesReferencia();
+  const atual = currentMonthKey();
   return (
     <div className="md-month">
       <button onClick={() => setMes(addMonths(mes, -1))} aria-label="Mês anterior">
@@ -124,6 +125,11 @@ export function MonthSelector() {
       <button onClick={() => setMes(addMonths(mes, 1))} aria-label="Mês seguinte">
         <ChevronRight size={16} />
       </button>
+      {mes !== atual ? (
+        <button className="md-month-now" onClick={() => setMes(atual)} title="Voltar ao mês atual">
+          Mês atual
+        </button>
+      ) : null}
     </div>
   );
 }

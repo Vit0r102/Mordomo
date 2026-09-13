@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { Plus, Trash2, CalendarClock, CheckCircle2, Hourglass } from "lucide-react";
+import { Plus, Trash2, Pencil, CalendarClock, CheckCircle2, Hourglass } from "lucide-react";
 import { PageHeader, Card, Modal, Field, StatCard, EmptyState, Badge, useToast } from "../components/mordomo/ui";
 import { useMordomo } from "../hooks/useMordomo";
 import { formatBRL, formatDate, parseAmount, todayISO } from "../utils/format";
@@ -7,19 +7,22 @@ import {
   recebimentosPendentes,
   recebimentosRecebidos,
   totalRecebimentosPendentes,
+  validarRecebimentoFuturo,
   nomeCategoria,
 } from "../services/mordomoService";
 
-function RecebimentoForm({ onSubmit, onCancel }) {
+/** Formulário único, usado tanto na criação quanto na edição. */
+function RecebimentoForm({ inicial, onSubmit, onCancel }) {
   const { state } = useMordomo();
   const categorias = state.categorias.filter((c) => c.tipo === "receita");
-  const [form, setForm] = useState({
-    descricao: "",
-    valor: "",
-    categoriaId: categorias[0]?.id || "",
-    dataPrevista: "",
-    observacao: "",
-  });
+  const [form, setForm] = useState(() => ({
+    descricao: inicial?.descricao || "",
+    valor: inicial ? String(inicial.valor).replace(".", ",") : "",
+    categoriaId: inicial?.categoriaId || categorias[0]?.id || "",
+    dataTrabalho: inicial?.dataTrabalho || "",
+    dataPrevista: inicial?.dataPrevista || "",
+    observacao: inicial?.observacao || "",
+  }));
   const [erros, setErros] = useState({});
   const set = (c) => (e) => setForm((prev) => ({ ...prev, [c]: e.target.value }));
 
@@ -27,18 +30,18 @@ function RecebimentoForm({ onSubmit, onCancel }) {
     <form
       onSubmit={(e) => {
         e.preventDefault();
-        const next = {};
-        if (!form.descricao.trim()) next.descricao = "Informe uma descrição.";
-        if (parseAmount(form.valor) <= 0) next.valor = "Informe um valor maior que zero.";
-        setErros(next);
-        if (Object.keys(next).length) return;
-        onSubmit({
-          descricao: form.descricao,
+        const dados = {
+          descricao: form.descricao.trim(),
           valor: parseAmount(form.valor),
           categoriaId: form.categoriaId,
+          dataTrabalho: form.dataTrabalho || null,
           dataPrevista: form.dataPrevista || null,
           observacao: form.observacao,
-        });
+        };
+        const next = validarRecebimentoFuturo(dados);
+        setErros(next);
+        if (Object.keys(next).length) return;
+        onSubmit(dados);
       }}
     >
       <div className="md-form-grid">
@@ -53,10 +56,7 @@ function RecebimentoForm({ onSubmit, onCancel }) {
         <Field label="Valor (R$)" error={erros.valor}>
           <input className="md-input" value={form.valor} onChange={set("valor")} placeholder="0,00" />
         </Field>
-        <Field label="Data prevista (opcional)">
-          <input className="md-input" type="date" value={form.dataPrevista} onChange={set("dataPrevista")} />
-        </Field>
-        <Field label="Categoria" span>
+        <Field label="Categoria">
           <select className="md-select" value={form.categoriaId} onChange={set("categoriaId")}>
             {categorias.map((c) => (
               <option key={c.id} value={c.id}>
@@ -64,6 +64,12 @@ function RecebimentoForm({ onSubmit, onCancel }) {
               </option>
             ))}
           </select>
+        </Field>
+        <Field label="Data do trabalho / referência" error={erros.dataTrabalho}>
+          <input className="md-input" type="date" value={form.dataTrabalho} onChange={set("dataTrabalho")} />
+        </Field>
+        <Field label="Data prevista de recebimento" error={erros.dataPrevista}>
+          <input className="md-input" type="date" value={form.dataPrevista} onChange={set("dataPrevista")} />
         </Field>
         <Field label="Observação" span>
           <textarea className="md-textarea" value={form.observacao} onChange={set("observacao")} />
@@ -202,26 +208,32 @@ export function RecebimentosFuturos() {
                 <div className="md-list-main">
                   <strong>{r.descricao}</strong>
                   <span className="md-mute-xs">
-                    {nomeCategoria(state, r.categoriaId)} ·{" "}
-                    {r.dataPrevista ? `previsto para ${formatDate(r.dataPrevista)}` : "sem data prevista"}
+                    {nomeCategoria(state, r.categoriaId)} · trabalho em {formatDate(r.dataTrabalho)} · previsto
+                    para {formatDate(r.dataPrevista)}
                   </span>
                   {r.observacao ? (
                     <span className="md-mute-xs" style={{ display: "block" }}>
                       {r.observacao}
                     </span>
                   ) : null}
-
                 </div>
                 <div className="md-list-side">
                   <strong>{formatBRL(r.valor)}</strong>
                   <Badge tone="gold">Pendente</Badge>
                 </div>
-                <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+                <div className="md-list-actions">
                   <button
                     className="md-button md-button-primary md-button-sm"
                     onClick={() => setModal({ tipo: "receber", recebimento: r })}
                   >
                     Recebi
+                  </button>
+                  <button
+                    className="md-button-icon"
+                    aria-label="Editar"
+                    onClick={() => setModal({ tipo: "editar", recebimento: r })}
+                  >
+                    <Pencil size={13} />
                   </button>
                   <button
                     className="md-button-icon"
@@ -254,12 +266,22 @@ export function RecebimentosFuturos() {
                 <div className="md-list-main">
                   <strong>{r.descricao}</strong>
                   <span className="md-mute-xs">
-                    Recebido em {formatDate(r.dataRecebimento)} · {nomeCategoria(state, r.categoriaId)}
+                    Recebido em {formatDate(r.dataRecebimento)} · trabalho em {formatDate(r.dataTrabalho)} ·{" "}
+                    {nomeCategoria(state, r.categoriaId)}
                   </span>
                 </div>
                 <div className="md-list-side">
                   <strong className="md-pos">{formatBRL(r.valor)}</strong>
                   <Badge tone="green">Recebido</Badge>
+                </div>
+                <div className="md-list-actions">
+                  <button
+                    className="md-button-icon"
+                    aria-label="Editar"
+                    onClick={() => setModal({ tipo: "editar", recebimento: r })}
+                  >
+                    <Pencil size={13} />
+                  </button>
                 </div>
               </div>
             ))}
@@ -269,11 +291,19 @@ export function RecebimentosFuturos() {
 
       <Modal
         open={!!modal}
-        title={modal?.tipo === "receber" ? `Confirmar — ${modal.recebimento.descricao}` : "Novo recebimento futuro"}
+        title={
+          modal?.tipo === "receber"
+            ? `Confirmar — ${modal.recebimento.descricao}`
+            : modal?.tipo === "editar"
+              ? `Editar — ${modal.recebimento.descricao}`
+              : "Novo recebimento futuro"
+        }
         description={
           modal?.tipo === "receber"
             ? "Isso cria uma receita real e o valor passa a compor o saldo."
-            : "A data prevista é opcional. O valor só entra no saldo quando você confirmar."
+            : modal?.tipo === "editar"
+              ? "Editar não duplica movimentações: se já foi recebido, a receita vinculada é apenas atualizada."
+              : "Informe a data do trabalho e a data prevista. O valor só entra no saldo quando você confirmar."
         }
         onClose={() => setModal(null)}
       >
@@ -283,6 +313,17 @@ export function RecebimentosFuturos() {
             onSubmit={(dadosForm) => {
               mordomo.addRecebimentoFuturo(dadosForm);
               showToast("Recebimento futuro registrado.");
+              setModal(null);
+            }}
+          />
+        ) : null}
+        {modal?.tipo === "editar" ? (
+          <RecebimentoForm
+            inicial={modal.recebimento}
+            onCancel={() => setModal(null)}
+            onSubmit={(dadosForm) => {
+              mordomo.updateRecebimentoFuturo(modal.recebimento.id, dadosForm);
+              showToast("Recebimento atualizado.");
               setModal(null);
             }}
           />

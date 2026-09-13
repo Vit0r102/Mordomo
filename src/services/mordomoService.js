@@ -211,6 +211,29 @@ export function recebimentosPrevistosDoMes(state, ym) {
   return recebimentosPendentes(state).filter((r) => r.dataPrevista && monthKey(r.dataPrevista) === ym);
 }
 
+/**
+ * Valida um recebimento futuro. As duas datas são obrigatórias:
+ * dataTrabalho (quando o trabalho aconteceu) e dataPrevista (quando o dinheiro é esperado).
+ */
+export function validarRecebimentoFuturo(dados = {}) {
+  const erros = {};
+  if (!String(dados.descricao || "").trim()) erros.descricao = "Informe uma descrição.";
+  if (!(Number(dados.valor) > 0)) erros.valor = "Informe um valor maior que zero.";
+  if (!dados.dataTrabalho) erros.dataTrabalho = "Informe a data do trabalho / referência.";
+  if (!dados.dataPrevista) erros.dataPrevista = "Informe a data prevista de recebimento.";
+  return erros;
+}
+
+/** Campos de um recebimento já recebido que devem ser espelhados na receita real. */
+export function camposEspelhadosNaReceita(patch = {}) {
+  const out = {};
+  if (patch.descricao !== undefined) out.descricao = patch.descricao;
+  if (patch.valor !== undefined) out.valor = Number(patch.valor) || 0;
+  if (patch.categoriaId !== undefined) out.categoriaId = patch.categoriaId;
+  if (patch.observacao !== undefined) out.observacao = patch.observacao;
+  return out;
+}
+
 /** Regra: um recebimento futuro pendente vira uma receita real. Idempotente. */
 export function converterRecebimentoEmReceita(recebimento, dados = {}) {
   if (!recebimento || recebimento.recebido) return null;

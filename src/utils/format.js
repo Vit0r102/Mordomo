@@ -58,8 +58,17 @@ export function monthKey(iso) {
   return String(iso).slice(0, 7);
 }
 
-export function todayISO() {
-  return new Date().toISOString().slice(0, 10);
+/** Data local (Brasil) em ISO — sem conversão para UTC, que deslocaria o dia. */
+export function todayISO(date = new Date()) {
+  const y = date.getFullYear();
+  const m = String(date.getMonth() + 1).padStart(2, "0");
+  const d = String(date.getDate()).padStart(2, "0");
+  return `${y}-${m}-${d}`;
+}
+
+/** Mês atual do sistema (AAAA-MM), sempre calculado dinamicamente. */
+export function currentMonthKey(date = new Date()) {
+  return todayISO(date).slice(0, 7);
 }
 
 export function addMonths(ym, delta) {

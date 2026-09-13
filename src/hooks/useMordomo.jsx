@@ -2,7 +2,7 @@ import { createContext, useContext, useEffect, useMemo, useState, useCallback } 
 import { loadState, saveState, resetState } from "../repositories/localStorageRepository";
 import { buildSeedState } from "../data/seed";
 import { uid } from "../utils/format";
-import { converterRecebimentoEmReceita } from "../services/mordomoService";
+import { converterRecebimentoEmReceita, camposEspelhadosNaReceita } from "../services/mordomoService";
 
 
 const MordomoContext = createContext(null);
@@ -145,6 +145,7 @@ export function MordomoProvider({ children }) {
               descricao: dados.descricao,
               valor: Number(dados.valor) || 0,
               categoriaId: dados.categoriaId || null,
+              dataTrabalho: dados.dataTrabalho || null,
               dataPrevista: dados.dataPrevista || null,
               observacao: dados.observacao || "",
               recebido: false,
@@ -154,6 +155,26 @@ export function MordomoProvider({ children }) {
           ],
         })),
       removeRecebimentoFuturo: removeFrom("recebimentosFuturos"),
+      /**
+       * Edita um recebimento futuro. Se já estiver recebido, a receita real
+       * vinculada é apenas atualizada (nunca duplicada).
+       */
+      updateRecebimentoFuturo: (id, patch) =>
+        update((prev) => {
+          const alvo = (prev.recebimentosFuturos || []).find((r) => r.id === id);
+          if (!alvo) return prev;
+          const espelho = camposEspelhadosNaReceita(patch);
+          return {
+            ...prev,
+            recebimentosFuturos: prev.recebimentosFuturos.map((r) =>
+              r.id === id ? { ...r, ...patch } : r,
+            ),
+            receitas:
+              alvo.recebido && alvo.receitaId
+                ? prev.receitas.map((rec) => (rec.id === alvo.receitaId ? { ...rec, ...espelho } : rec))
+                : prev.receitas,
+          };
+        }),
       confirmarRecebimento: (recebimentoId, dados = {}) =>
         update((prev) => {
           const alvo = (prev.recebimentosFuturos || []).find((r) => r.id === recebimentoId);

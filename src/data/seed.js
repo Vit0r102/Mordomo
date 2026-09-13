@@ -1,6 +1,11 @@
-import { uid } from "../utils/format";
+import { uid, currentMonthKey, lastMonths, addMonths } from "../utils/format";
 
-export const CURRENT_MONTH = "2026-07";
+/** Mês atual do sistema, calculado dinamicamente (nunca fixo). */
+export const CURRENT_MONTH = currentMonthKey();
+
+/** Os 6 meses de demonstração terminam sempre no mês atual. */
+const MESES_DEMO = lastMonths(CURRENT_MONTH, 6);
+const dia = (ym, d) => `${ym}-${String(d).padStart(2, "0")}`;
 
 export const categorias = [
   { id: "cat_moradia", nome: "Moradia", tipo: "despesa", cor: "#1f4d3a" },
@@ -31,22 +36,17 @@ export const contas = [
 ];
 
 const RECEITA_BASE = [
-  { ym: "2026-02", salario: 14200, extra: 1100 },
-  { ym: "2026-03", salario: 14200, extra: 2400 },
-  { ym: "2026-04", salario: 14800, extra: 1600 },
-  { ym: "2026-05", salario: 14800, extra: 2900 },
-  { ym: "2026-06", salario: 14800, extra: 1680 },
-  { ym: "2026-07", salario: 15000, extra: 3540 },
-];
+  { salario: 14200, extra: 1100 },
+  { salario: 14200, extra: 2400 },
+  { salario: 14800, extra: 1600 },
+  { salario: 14800, extra: 2900 },
+  { salario: 14800, extra: 1680 },
+  { salario: 15000, extra: 3540 },
+].map((v, i) => ({ ...v, ym: MESES_DEMO[i] }));
 
-const DESPESA_BASE = {
-  "2026-02": 9860,
-  "2026-03": 10420,
-  "2026-04": 9980,
-  "2026-05": 11040,
-  "2026-06": 10664,
-  "2026-07": 11230,
-};
+const DESPESA_BASE = Object.fromEntries(
+  [9860, 10420, 9980, 11040, 10664, 11230].map((total, i) => [MESES_DEMO[i], total]),
+);
 
 const DISTRIBUICAO = [
   { categoriaId: "cat_moradia", peso: 0.289, descricao: "Aluguel" },
@@ -171,11 +171,11 @@ export const dividas = [
     nome: "Financiamento Carro",
     valorTotal: 18000,
     pagamentoPlanejado: 600,
-    proximoPagamento: "2026-07-20",
+    proximoPagamento: dia(CURRENT_MONTH, 20),
     pagamentos: [
-      { id: uid("pag"), valor: 3150, data: "2026-04-20" },
-      { id: uid("pag"), valor: 1200, data: "2026-05-20" },
-      { id: uid("pag"), valor: 1200, data: "2026-06-20" },
+      { id: uid("pag"), valor: 3150, data: dia(addMonths(CURRENT_MONTH, -3), 20) },
+      { id: uid("pag"), valor: 1200, data: dia(addMonths(CURRENT_MONTH, -2), 20) },
+      { id: uid("pag"), valor: 1200, data: dia(addMonths(CURRENT_MONTH, -1), 20) },
     ],
   },
   {
@@ -183,10 +183,10 @@ export const dividas = [
     nome: "Cartão de Crédito",
     valorTotal: 5000,
     pagamentoPlanejado: 400,
-    proximoPagamento: "2026-07-10",
+    proximoPagamento: dia(CURRENT_MONTH, 10),
     pagamentos: [
-      { id: uid("pag"), valor: 900, data: "2026-05-10" },
-      { id: uid("pag"), valor: 900, data: "2026-06-10" },
+      { id: uid("pag"), valor: 900, data: dia(addMonths(CURRENT_MONTH, -2), 10) },
+      { id: uid("pag"), valor: 900, data: dia(addMonths(CURRENT_MONTH, -1), 10) },
     ],
   },
   {
@@ -194,10 +194,10 @@ export const dividas = [
     nome: "Empréstimo Pessoal",
     valorTotal: 8000,
     pagamentoPlanejado: 350,
-    proximoPagamento: "2026-07-15",
+    proximoPagamento: dia(CURRENT_MONTH, 15),
     pagamentos: [
-      { id: uid("pag"), valor: 2750, data: "2026-05-15" },
-      { id: uid("pag"), valor: 2400, data: "2026-06-15" },
+      { id: uid("pag"), valor: 2750, data: dia(addMonths(CURRENT_MONTH, -2), 15) },
+      { id: uid("pag"), valor: 2400, data: dia(addMonths(CURRENT_MONTH, -1), 15) },
     ],
   },
 ];
@@ -221,7 +221,8 @@ export const recebimentosFuturos = [
     descricao: "Saldo do projeto de consultoria",
     valor: 800,
     categoriaId: "cat_extra",
-    dataPrevista: "2026-07-22",
+    dataTrabalho: dia(CURRENT_MONTH, 15),
+    dataPrevista: dia(addMonths(CURRENT_MONTH, 1), 22),
     observacao: "R$ 200 recebidos na assinatura do contrato.",
     recebido: false,
     receitaId: null,
@@ -232,8 +233,9 @@ export const recebimentosFuturos = [
     descricao: "Segunda parcela do freelance",
     valor: 480,
     categoriaId: "cat_extra",
-    dataPrevista: null,
-    observacao: "Sem data combinada ainda.",
+    dataTrabalho: dia(addMonths(CURRENT_MONTH, -1), 28),
+    dataPrevista: dia(CURRENT_MONTH, 28),
+    observacao: "Combinado com o cliente.",
     recebido: false,
     receitaId: null,
     dataRecebimento: null,

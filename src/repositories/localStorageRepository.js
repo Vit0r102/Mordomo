@@ -1,6 +1,23 @@
 import { buildSeedState, buildEmptyState } from "../data/seed";
+import { currentMonthKey } from "../utils/format";
 
 const STORAGE_KEY = "mordomo.v1";
+
+/**
+ * Compatibilidade com dados antigos: garante os campos novos sem inventar datas
+ * e define o mês de referência inicial como o mês atual do sistema.
+ */
+function migrar(state) {
+  return {
+    ...state,
+    recebimentosFuturos: (state.recebimentosFuturos || []).map((r) => ({
+      ...r,
+      dataTrabalho: r.dataTrabalho ?? null,
+      dataPrevista: r.dataPrevista ?? null,
+    })),
+    configuracoes: { ...state.configuracoes, mesReferencia: currentMonthKey() },
+  };
+}
 
 function isBrowser() {
   return typeof window !== "undefined" && !!window.localStorage;
@@ -15,7 +32,7 @@ export function loadState() {
       saveState(seeded);
       return seeded;
     }
-    return { ...buildEmptyState(), ...JSON.parse(raw) };
+    return migrar({ ...buildEmptyState(), ...JSON.parse(raw) });
   } catch {
     return buildSeedState();
   }

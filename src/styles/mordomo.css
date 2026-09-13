@@ -1041,3 +1041,49 @@ textarea {
   margin-left: auto;
   text-align: right;
 }
+
+/* ===== Página Como Usar ===== */
+.md-help-steps { margin: 0; padding: 0 0 0 4px; list-style: none; display: flex; flex-direction: column; gap: 10px; }
+.md-help-steps li { font-size: 14px; line-height: 1.55; color: var(--md-text); }
+.md-help-list { display: flex; flex-direction: column; gap: 8px; }
+.md-help-list .md-card { box-shadow: none; border: 1px solid var(--md-line, rgba(0,0,0,.08)); }
+.md-help-head { display: flex; align-items: center; gap: 12px; width: 100%; padding: 14px 16px; background: none; border: none; cursor: pointer; font: inherit; color: inherit; }
+.md-help-title { display: block; font-size: 14px; font-weight: 600; color: var(--md-text); }
+.md-help-resumo { display: block; font-size: 12px; color: var(--md-muted); margin-top: 2px; }
+.md-help-body { padding: 0 16px 14px 64px; }
+.md-help-body ul { margin: 0; padding-left: 18px; display: flex; flex-direction: column; gap: 6px; }
+.md-help-body li { font-size: 13px; line-height: 1.6; color: var(--md-muted); }
+.md-help-tips { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 10px; }
+.md-help-tips li { display: flex; align-items: flex-start; gap: 10px; font-size: 13px; line-height: 1.55; color: var(--md-text); }
+.md-help-tips li svg { flex-shrink: 0; margin-top: 2px; color: var(--md-gold, #b8893a); }
+@media (max-width: 640px) { .md-help-body { padding-left: 16px; } }
+
+/* Atalho para voltar ao mês atual */
+.md-month .md-month-now {
+  font-size: 11px;
+  letter-spacing: 0.02em;
+  padding: 3px 8px;
+  color: var(--md-green-700);
+  border: 1px solid var(--md-line);
+  border-radius: 999px;
+  white-space: nowrap;
+}
+
+/* Ações em linhas de lista */
+.md-list-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex: 0 0 auto;
+}
+@media (max-width: 640px) {
+  .md-list-row {
+    flex-wrap: wrap;
+  }
+  .md-list-main {
+    flex: 1 1 100%;
+  }
+  .md-list-actions {
+    margin-left: auto;
+  }
+}
