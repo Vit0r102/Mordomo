@@ -108,11 +108,155 @@ function PlanejamentoForm({ inicial, onSubmit, onCancel }) {
   );
 }
 
+function ContaFixaForm({ onSubmit, onCancel }) {
+  const { state } = useMordomo();
+  const categorias = state.categorias.filter((c) => c.tipo === "despesa");
+  const [form, setForm] = useState(() => ({
+    nome: "",
+    valor: "",
+    diaVencimento: "10",
+    categoriaId: categorias[0]?.id || "",
+    frequencia: "Mensal",
+  }));
+  const [erros, setErros] = useState({});
+  const set = (campo) => (e) => setForm((prev) => ({ ...prev, [campo]: e.target.value }));
+
+  const submit = (e) => {
+    e.preventDefault();
+    const next = {};
+    if (!form.nome.trim()) next.nome = "Informe o nome da conta fixa.";
+    if (parseAmount(form.valor) <= 0) next.valor = "Informe um valor válido.";
+    const dia = Number(form.diaVencimento);
+    if (!(dia >= 1 && dia <= 31)) next.diaVencimento = "Informe um dia entre 1 e 31.";
+    if (!form.categoriaId) next.categoriaId = "Escolha uma categoria.";
+    setErros(next);
+    if (Object.keys(next).length) return;
+    onSubmit({
+      nome: form.nome.trim(),
+      valor: parseAmount(form.valor),
+      diaVencimento: dia,
+      categoriaId: form.categoriaId,
+      frequencia: form.frequencia,
+    });
+  };
+
+  return (
+    <form onSubmit={submit}>
+      <div className="md-form-grid">
+        <Field label="Nome da conta fixa" error={erros.nome} span>
+          <input className="md-input" value={form.nome} onChange={set("nome")} placeholder="Aluguel, Energia..." />
+        </Field>
+        <Field label="Valor padrão (R$)" error={erros.valor}>
+          <input className="md-input" value={form.valor} onChange={set("valor")} placeholder="0,00" />
+        </Field>
+        <Field label="Dia do vencimento" error={erros.diaVencimento}>
+          <input className="md-input" value={form.diaVencimento} onChange={set("diaVencimento")} placeholder="10" />
+        </Field>
+        <Field label="Categoria" error={erros.categoriaId}>
+          <select className="md-select" value={form.categoriaId} onChange={set("categoriaId")}>
+            {categorias.map((c) => (
+              <option key={c.id} value={c.id}>
+                {c.nome}
+              </option>
+            ))}
+          </select>
+        </Field>
+        <Field label="Frequência">
+          <select className="md-select" value={form.frequencia} onChange={set("frequencia")}>
+            <option value="Mensal">Mensal</option>
+          </select>
+        </Field>
+      </div>
+      <div className="md-form-actions">
+        <button type="button" className="md-button md-button-ghost" onClick={onCancel}>
+          Cancelar
+        </button>
+        <button type="submit" className="md-button md-button-primary">
+          Salvar conta fixa
+        </button>
+      </div>
+    </form>
+  );
+}
+
+function PagamentoFixoForm({ fixo, onSubmit, onCancel }) {
+  const { state } = useMordomo();
+  const [form, setForm] = useState(() => ({
+    valor: String(fixo.valor ?? "").replace(".", ","),
+    data: fixo.vencimento,
+    tipoDinheiroId: state.tiposDinheiro[0]?.id || "",
+    contaId: state.contas[0]?.id || "",
+    observacao: "",
+  }));
+  const [erros, setErros] = useState({});
+  const set = (campo) => (e) => setForm((prev) => ({ ...prev, [campo]: e.target.value }));
+
+  const submit = (e) => {
+    e.preventDefault();
+    const next = {};
+    if (parseAmount(form.valor) <= 0) next.valor = "Informe o valor pago.";
+    if (!form.data) next.data = "Informe a data do pagamento.";
+    setErros(next);
+    if (Object.keys(next).length) return;
+    onSubmit({
+      valor: parseAmount(form.valor),
+      data: form.data,
+      tipoDinheiroId: form.tipoDinheiroId || null,
+      contaId: form.contaId || null,
+      observacao: form.observacao,
+    });
+  };
+
+  return (
+    <form onSubmit={submit}>
+      <div className="md-form-grid">
+        <Field label="Valor pago (R$)" error={erros.valor}>
+          <input className="md-input" value={form.valor} onChange={set("valor")} placeholder="0,00" />
+        </Field>
+        <Field label="Data do pagamento" error={erros.data}>
+          <input className="md-input" type="date" value={form.data} onChange={set("data")} />
+        </Field>
+        <Field label="Tipo de dinheiro">
+          <select className="md-select" value={form.tipoDinheiroId} onChange={set("tipoDinheiroId")}>
+            {state.tiposDinheiro.map((t) => (
+              <option key={t.id} value={t.id}>
+                {t.nome}
+              </option>
+            ))}
+          </select>
+        </Field>
+        <Field label="Conta">
+          <select className="md-select" value={form.contaId} onChange={set("contaId")}>
+            {state.contas.map((c) => (
+              <option key={c.id} value={c.id}>
+                {c.nome}
+              </option>
+            ))}
+          </select>
+        </Field>
+        <Field label="Observação" span>
+          <input className="md-input" value={form.observacao} onChange={set("observacao")} placeholder="Opcional" />
+        </Field>
+      </div>
+      <div className="md-form-actions">
+        <button type="button" className="md-button md-button-ghost" onClick={onCancel}>
+          Cancelar
+        </button>
+        <button type="submit" className="md-button md-button-primary">
+          Registrar pagamento
+        </button>
+      </div>
+    </form>
+  );
+}
+
 export function Planejamento() {
   const mordomo = useMordomo();
   const { state } = mordomo;
   const ym = state.configuracoes.mesReferencia;
   const [modal, setModal] = useState(null);
+  const [modalFixo, setModalFixo] = useState(false);
+  const [modalPagamento, setModalPagamento] = useState(null);
   const [toast, showToast] = useToast();
 
   const resumo = useMemo(() => resumoPlanejamento(state, ym), [state, ym]);
@@ -220,30 +364,49 @@ export function Planejamento() {
           )}
         </Card>
 
-        <Card title="Contas fixas do mês">
+        <Card
+          title="Contas fixas do mês"
+          action={
+            <button className="md-button md-button-ghost md-button-sm" onClick={() => setModalFixo(true)}>
+              <Plus size={14} /> Nova conta fixa
+            </button>
+          }
+        >
           {fixos.length === 0 ? (
-            <EmptyState title="Sem contas fixas" message="Cadastre em Configurações ou aqui pelo planejamento." />
+            <EmptyState title="Sem contas fixas" message="Cadastre sua primeira conta fixa (aluguel, energia, internet)." />
           ) : (
             <div className="md-list">
               {fixos.map((f) => (
                 <div className="md-list-row" key={f.id}>
                   <div className="md-list-main">
                     <strong>{f.nome}</strong>
-                    <span className="md-mute-xs">Vence dia {String(f.diaVencimento).padStart(2, "0")}</span>
+                    <span className="md-mute-xs">
+                      Vencimento: dia {String(f.diaVencimento).padStart(2, "0")}
+                      {f.frequencia ? ` · ${f.frequencia}` : ""}
+                    </span>
                   </div>
                   <span className="md-list-amount">{formatBRL(f.valor)}</span>
                   <Badge tone={f.pago ? "green" : "gold"}>{f.pago ? "Pago" : "Pendente"}</Badge>
                   {!f.pago ? (
                     <button
                       className="md-button md-button-ghost md-button-sm"
-                      onClick={() => {
-                        mordomo.registrarPagamentoFixo(f.id, { valor: f.valor, data: f.vencimento });
-                        showToast(`${f.nome} pago.`);
-                      }}
+                      onClick={() => setModalPagamento(f)}
                     >
-                      Pagar
+                      Registrar pagamento
                     </button>
                   ) : null}
+                  <div className="md-row-actions">
+                    <button
+                      className="md-button-icon"
+                      onClick={() => {
+                        mordomo.removePagamentoFixo(f.id);
+                        showToast("Conta fixa removida.");
+                      }}
+                      aria-label="Excluir conta fixa"
+                    >
+                      <Trash2 size={13} />
+                    </button>
+                  </div>
                 </div>
               ))}
             </div>
@@ -258,6 +421,43 @@ export function Planejamento() {
         onClose={() => setModal(null)}
       >
         {modal ? <PlanejamentoForm inicial={modal.item} onSubmit={salvar} onCancel={() => setModal(null)} /> : null}
+      </Modal>
+
+      <Modal
+        open={modalFixo}
+        title="Nova conta fixa"
+        description="Cadastre a conta recorrente. Ela só vira despesa quando você registrar o pagamento."
+        onClose={() => setModalFixo(false)}
+      >
+        {modalFixo ? (
+          <ContaFixaForm
+            onSubmit={(dados) => {
+              mordomo.addPagamentoFixo(dados);
+              setModalFixo(false);
+              showToast("Conta fixa cadastrada.");
+            }}
+            onCancel={() => setModalFixo(false)}
+          />
+        ) : null}
+      </Modal>
+
+      <Modal
+        open={!!modalPagamento}
+        title={modalPagamento ? `Pagar ${modalPagamento.nome}` : ""}
+        description="O pagamento gera uma despesa real vinculada a esta conta fixa."
+        onClose={() => setModalPagamento(null)}
+      >
+        {modalPagamento ? (
+          <PagamentoFixoForm
+            fixo={modalPagamento}
+            onSubmit={(dados) => {
+              if (!modalPagamento.pago) mordomo.registrarPagamentoFixo(modalPagamento.id, dados);
+              setModalPagamento(null);
+              showToast(`${modalPagamento.nome} pago.`);
+            }}
+            onCancel={() => setModalPagamento(null)}
+          />
+        ) : null}
       </Modal>
       {toast}
     </>
