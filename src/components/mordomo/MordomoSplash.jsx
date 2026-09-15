@@ -45,7 +45,7 @@ export default function MordomoSplash({ onFinish }) {
     >
       <video
         className="mordomo-splash__video"
-        src="/mordomo-intro-desktop.mp4"
+        src="/intro-desktop.mp4"
         autoPlay
         muted
         playsInline
