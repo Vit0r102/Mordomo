@@ -4,9 +4,9 @@ const SPLASH_KEY = "mordomo.splashShown";
 
 export default function MordomoSplash({ onFinish }) {
   const [visible, setVisible] = useState(false);
+  const [fading, setFading] = useState(false);
 
   useEffect(() => {
-    // Mobile: não exibe o Splash
     const isMobile = window.matchMedia("(max-width: 768px)").matches;
 
     if (isMobile) {
@@ -15,7 +15,6 @@ export default function MordomoSplash({ onFinish }) {
       return;
     }
 
-    // Desktop: verifica se o Splash já foi exibido nesta sessão
     const alreadyShown = sessionStorage.getItem(SPLASH_KEY);
 
     if (alreadyShown) {
@@ -28,8 +27,8 @@ export default function MordomoSplash({ onFinish }) {
 
   const finish = () => {
     sessionStorage.setItem(SPLASH_KEY, "true");
+    setFading(true);
 
-    // Pequeno fade antes de sair
     setTimeout(() => {
       setVisible(false);
       onFinish?.();
@@ -39,10 +38,14 @@ export default function MordomoSplash({ onFinish }) {
   if (!visible) return null;
 
   return (
-    <div className="mordomo-splash">
+    <div
+      className={`mordomo-splash ${
+        fading ? "mordomo-splash--fade" : ""
+      }`}
+    >
       <video
         className="mordomo-splash__video"
-        src="/intro-desktop.mp4"
+        src="/mordomo-intro-desktop.mp4"
         autoPlay
         muted
         playsInline
