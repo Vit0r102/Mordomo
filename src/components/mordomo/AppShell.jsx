@@ -25,7 +25,7 @@ import {
 import { useMordomo } from "../../hooks/useMordomo";
 import { greeting } from "../../utils/format";
 import { MonthSelector } from "./ui";
-
+import  MordomoSplash  from "./MordomoSplash";
 export const NAV = [
   { to: "/", label: "Visão Geral", icon: LayoutDashboard },
   { to: "/receitas", label: "Receitas", icon: TrendingUp },
@@ -61,6 +61,7 @@ export function AppShell({ children }) {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
 
   return (
+  <> <MordomoSplash />
     <div className="md-app">
       <aside className="md-sidebar">
         <div className="md-brand">
@@ -200,5 +201,6 @@ export function AppShell({ children }) {
         </div>
       ) : null}
     </div>
+    </>
   );
 }

@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as CalendarioRouteImport } from './routes/calendario'
 import { Route as CategoriasRouteImport } from './routes/categorias'
+import { Route as ComoUsarRouteImport } from './routes/como-usar'
 import { Route as ConfiguracoesRouteImport } from './routes/configuracoes'
 import { Route as ContasRouteImport } from './routes/contas'
 import { Route as ContribuicoesRouteImport } from './routes/contribuicoes'
@@ -19,6 +20,7 @@ import { Route as DespesasRouteImport } from './routes/despesas'
 import { Route as DividasRouteImport } from './routes/dividas'
 import { Route as HistoricoRouteImport } from './routes/historico'
 import { Route as PlanejamentoRouteImport } from './routes/planejamento'
+import { Route as RecebimentosFuturosRouteImport } from './routes/recebimentos-futuros'
 import { Route as ReceitasRouteImport } from './routes/receitas'
 import { Route as RelatoriosRouteImport } from './routes/relatorios'
 
@@ -35,6 +37,11 @@ const CalendarioRoute = CalendarioRouteImport.update({
 const CategoriasRoute = CategoriasRouteImport.update({
   id: '/categorias',
   path: '/categorias',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ComoUsarRoute = ComoUsarRouteImport.update({
+  id: '/como-usar',
+  path: '/como-usar',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ConfiguracoesRoute = ConfiguracoesRouteImport.update({
@@ -72,6 +79,11 @@ const PlanejamentoRoute = PlanejamentoRouteImport.update({
   path: '/planejamento',
   getParentRoute: () => rootRouteImport,
 } as any)
+const RecebimentosFuturosRoute = RecebimentosFuturosRouteImport.update({
+  id: '/recebimentos-futuros',
+  path: '/recebimentos-futuros',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ReceitasRoute = ReceitasRouteImport.update({
   id: '/receitas',
   path: '/receitas',
@@ -87,6 +99,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/calendario': typeof CalendarioRoute
   '/categorias': typeof CategoriasRoute
+  '/como-usar': typeof ComoUsarRoute
   '/configuracoes': typeof ConfiguracoesRoute
   '/contas': typeof ContasRoute
   '/contribuicoes': typeof ContribuicoesRoute
@@ -94,6 +107,7 @@ export interface FileRoutesByFullPath {
   '/dividas': typeof DividasRoute
   '/historico': typeof HistoricoRoute
   '/planejamento': typeof PlanejamentoRoute
+  '/recebimentos-futuros': typeof RecebimentosFuturosRoute
   '/receitas': typeof ReceitasRoute
   '/relatorios': typeof RelatoriosRoute
 }
@@ -101,6 +115,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/calendario': typeof CalendarioRoute
   '/categorias': typeof CategoriasRoute
+  '/como-usar': typeof ComoUsarRoute
   '/configuracoes': typeof ConfiguracoesRoute
   '/contas': typeof ContasRoute
   '/contribuicoes': typeof ContribuicoesRoute
@@ -108,6 +123,7 @@ export interface FileRoutesByTo {
   '/dividas': typeof DividasRoute
   '/historico': typeof HistoricoRoute
   '/planejamento': typeof PlanejamentoRoute
+  '/recebimentos-futuros': typeof RecebimentosFuturosRoute
   '/receitas': typeof ReceitasRoute
   '/relatorios': typeof RelatoriosRoute
 }
@@ -116,6 +132,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/calendario': typeof CalendarioRoute
   '/categorias': typeof CategoriasRoute
+  '/como-usar': typeof ComoUsarRoute
   '/configuracoes': typeof ConfiguracoesRoute
   '/contas': typeof ContasRoute
   '/contribuicoes': typeof ContribuicoesRoute
@@ -123,6 +140,7 @@ export interface FileRoutesById {
   '/dividas': typeof DividasRoute
   '/historico': typeof HistoricoRoute
   '/planejamento': typeof PlanejamentoRoute
+  '/recebimentos-futuros': typeof RecebimentosFuturosRoute
   '/receitas': typeof ReceitasRoute
   '/relatorios': typeof RelatoriosRoute
 }
@@ -132,6 +150,7 @@ export interface FileRouteTypes {
     | '/'
     | '/calendario'
     | '/categorias'
+    | '/como-usar'
     | '/configuracoes'
     | '/contas'
     | '/contribuicoes'
@@ -139,6 +158,7 @@ export interface FileRouteTypes {
     | '/dividas'
     | '/historico'
     | '/planejamento'
+    | '/recebimentos-futuros'
     | '/receitas'
     | '/relatorios'
   fileRoutesByTo: FileRoutesByTo
@@ -146,6 +166,7 @@ export interface FileRouteTypes {
     | '/'
     | '/calendario'
     | '/categorias'
+    | '/como-usar'
     | '/configuracoes'
     | '/contas'
     | '/contribuicoes'
@@ -153,6 +174,7 @@ export interface FileRouteTypes {
     | '/dividas'
     | '/historico'
     | '/planejamento'
+    | '/recebimentos-futuros'
     | '/receitas'
     | '/relatorios'
   id:
@@ -160,6 +182,7 @@ export interface FileRouteTypes {
     | '/'
     | '/calendario'
     | '/categorias'
+    | '/como-usar'
     | '/configuracoes'
     | '/contas'
     | '/contribuicoes'
@@ -167,6 +190,7 @@ export interface FileRouteTypes {
     | '/dividas'
     | '/historico'
     | '/planejamento'
+    | '/recebimentos-futuros'
     | '/receitas'
     | '/relatorios'
   fileRoutesById: FileRoutesById
@@ -175,6 +199,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   CalendarioRoute: typeof CalendarioRoute
   CategoriasRoute: typeof CategoriasRoute
+  ComoUsarRoute: typeof ComoUsarRoute
   ConfiguracoesRoute: typeof ConfiguracoesRoute
   ContasRoute: typeof ContasRoute
   ContribuicoesRoute: typeof ContribuicoesRoute
@@ -182,6 +207,7 @@ export interface RootRouteChildren {
   DividasRoute: typeof DividasRoute
   HistoricoRoute: typeof HistoricoRoute
   PlanejamentoRoute: typeof PlanejamentoRoute
+  RecebimentosFuturosRoute: typeof RecebimentosFuturosRoute
   ReceitasRoute: typeof ReceitasRoute
   RelatoriosRoute: typeof RelatoriosRoute
 }
@@ -207,6 +233,13 @@ declare module '@tanstack/react-router' {
       path: '/categorias'
       fullPath: '/categorias'
       preLoaderRoute: typeof CategoriasRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/como-usar': {
+      id: '/como-usar'
+      path: '/como-usar'
+      fullPath: '/como-usar'
+      preLoaderRoute: typeof ComoUsarRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/configuracoes': {
@@ -258,6 +291,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PlanejamentoRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/recebimentos-futuros': {
+      id: '/recebimentos-futuros'
+      path: '/recebimentos-futuros'
+      fullPath: '/recebimentos-futuros'
+      preLoaderRoute: typeof RecebimentosFuturosRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/receitas': {
       id: '/receitas'
       path: '/receitas'
@@ -279,6 +319,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   CalendarioRoute: CalendarioRoute,
   CategoriasRoute: CategoriasRoute,
+  ComoUsarRoute: ComoUsarRoute,
   ConfiguracoesRoute: ConfiguracoesRoute,
   ContasRoute: ContasRoute,
   ContribuicoesRoute: ContribuicoesRoute,
@@ -286,6 +327,7 @@ const rootRouteChildren: RootRouteChildren = {
   DividasRoute: DividasRoute,
   HistoricoRoute: HistoricoRoute,
   PlanejamentoRoute: PlanejamentoRoute,
+  RecebimentosFuturosRoute: RecebimentosFuturosRoute,
   ReceitasRoute: ReceitasRoute,
   RelatoriosRoute: RelatoriosRoute,
 }

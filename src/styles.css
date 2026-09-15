@@ -143,3 +143,59 @@
     color: var(--color-foreground);
   }
 }
+/* =========================================================
+   MORDOMO SPLASH
+   ========================================================= */
+
+.mordomo-splash {
+  position: fixed;
+  inset: 0;
+  z-index: 99999;
+  width: 100%;
+  height: 100%;
+  background: #0B2926;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  opacity: 1;
+  transition: opacity 0.5s ease;
+}
+
+.mordomo-splash--fade {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.mordomo-splash__video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.mordomo-splash__video--mobile {
+  display: none;
+}
+
+/* Celulares */
+@media (max-width: 768px) {
+  .mordomo-splash__video--desktop {
+    display: none;
+  }
+
+  .mordomo-splash__video--mobile {
+    display: block;
+    width: 100%;
+    height: 100%;
+    position: fixed;
+    object-position: center;
+  }
+}
+
+/* Acessibilidade */
+@media (prefers-reduced-motion: reduce) {
+  .mordomo-splash {
+    transition: none;
+  }
+}
